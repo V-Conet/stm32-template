@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "probe-rs-debug",
+      "request": "launch",
+      "name": "Debug {{ chip }} (probe-rs)",
+      "cwd": "${workspaceFolder}",
+      "chip": "{{ chip }}",
+      // "connectUnderReset": false,
+      "flashingConfig": {
+        "flashingEnabled": true,
+        "verifyBeforeFlashing": true,
+        "verifyAfterFlashing": true,
+        "haltAfterReset": true
+      },
+      "coreConfigs": [
+        {
+          "coreIndex": 0,
+          "programBinary": "${workspaceFolder}/target/{{ rust_target }}/debug/{{project-name}}",
+          "rttEnabled": true,
+          "rttChannelFormats": [
+            {
+              "channelNumber": 0,
+              "dataFormat": "Defmt"
+            }
+          ]
+        }
+      ],
+      "preLaunchTask": "Build (debug)"
+    }
+  ]
+}

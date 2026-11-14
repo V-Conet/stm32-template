@@ -1,0 +1,50 @@
+[package]
+name = "{{project-name}}"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+authors = ["{{authors}}"]
+
+[[bin]]
+name = "{{project-name}}"
+test = false
+bench = false
+
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+
+[profile.dev]
+# Symbols are nice, and they don't increase the size on Flash.
+debug = true
+opt-level = "z"
+
+
+[dependencies]
+cortex-m = { version = "0.7.10", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7.7"
+defmt = "1.2.0"
+defmt-rtt = "1.3.1"
+panic-probe = { version = "1.0.0", features = ["print-defmt"] }
+embassy-executor = { version = "0.10.0", features = ["platform-cortex-m", "executor-thread"] }
+embassy-time = "0.5.1"
+embassy-sync = "0.8.0"
+
+# The chip feature is selected by the template: it is the lower-case part
+# number, e.g. "stm32g474ce" (dual-core H7 parts get a "-cm7" suffix).
+[dependencies.embassy-stm32]
+version = "0.6.0"
+features = [
+    "{{ chip_feature }}",
+    "defmt",
+    "time",
+    "time-driver-any",
+{%- unless use_memory_x %}
+    "memory-x",
+{%- endunless %}
+{%- if use_single_bank %}
+    "single-bank",
+{%- endif %}
+]

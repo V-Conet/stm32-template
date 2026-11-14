@@ -1,0 +1,32 @@
+[template]
+cargo_generate_version = ">=0.20.0"
+ignore = [".git", "target", "Cargo.lock", "scripts"]
+
+[hooks]
+pre = ["pre-script.rhai"]
+
+[placeholders.mcu]
+type = "string"
+prompt = "Which STM32 MCU do you target? (e.g. STM32F103C8)"
+regex = "(?i)^stm32[fgh][0-9][a-z0-9]*$"
+default = "STM32F103C8"
+
+[placeholders.advanced]
+type = "bool"
+prompt = "Configure advanced template options?"
+default = false
+
+[conditional.'advanced'.placeholders.ci]
+type = "bool"
+prompt = "Add a GitHub Actions CI workflow?"
+default = false
+
+[conditional.'advanced'.placeholders.memory_x]
+type = "bool"
+prompt = "Use self-managed memory.x?"
+default = false
+
+[conditional.'advanced'.placeholders.vscode_debug]
+type = "bool"
+prompt = "Enable probe-rs debugging support for VS Code?"
+default = true

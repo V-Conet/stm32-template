@@ -1,0 +1,27 @@
+name: CI Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: {{ rust_target }}
+
+      - name: Build (release)
+        run: cargo build --release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-artifacts
+          path: target/{{ rust_target }}/release/{{ project_name }}
