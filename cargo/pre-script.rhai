@@ -43,6 +43,43 @@ if is_dual_core {
     chip_feature += "-cm7";
 }
 
+// USART1 TX DMA binding used by the example in src/main.rs.
+// embassy-stm32 names the peripheral singleton DMA1_CHx / GPDMA1_CHx on every
+// family, but the DMA channel and its interrupt name differ between families
+// (and, on F0, between chips).
+let dma_peri = "DMA1_CH4";
+let dma_irq = "DMA1_CHANNEL4";
+
+if family == "F0" {
+    dma_peri = "DMA1_CH2";
+    dma_irq = "DMA1_CHANNEL2_3";
+    if part.starts_with("F09") {
+        // F091/F098 route their DMA IRQs through a combined vector.
+        dma_irq = "DMA1_CH2_3_DMA2_CH1_2";
+    }
+} else if family == "F2" || family == "F4" || family == "F7" {
+    dma_peri = "DMA2_CH7";
+    dma_irq = "DMA2_STREAM7";
+} else if family == "G0" {
+    dma_peri = "DMA1_CH1";
+    dma_irq = "DMA1_CHANNEL1";
+} else if family == "H5" {
+    dma_peri = "GPDMA1_CH4";
+    dma_irq = "GPDMA1_CHANNEL4";
+} else if family == "H7" {
+    if part.starts_with("H7R") || part.starts_with("H7S") {
+        dma_peri = "GPDMA1_CH4";
+        dma_irq = "GPDMA1_CHANNEL4";
+    } else {
+        // Classic H7 (DMA1 streams via DMAMUX1).
+        dma_peri = "DMA1_CH4";
+        dma_irq = "DMA1_STREAM4";
+    }
+}
+
+variable::set("dma_peri", dma_peri);
+variable::set("dma_irq", dma_irq);
+
 // Chips whose flash can be configured as single or dual bank (F4/F7/G0/G4
 // parts, per stm32-metapac 21.0 metadata, which embassy-stm32 0.6 depends on).
 // embassy-stm32's build script refuses to build these unless one of the

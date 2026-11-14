@@ -23,10 +23,13 @@ use embassy_stm32::{init_primary, SharedData};
 static SHARED_DATA: MaybeUninit<SharedData> = MaybeUninit::uninit();
 {%- endif %}
 
-// Adjust the DMA, IRQ and pin names to match your chip's
-// reference manual / embassy-stm32 examples.
+// NOTE: USART1 TX is on PA9. The DMA channel and IRQ below are picked per
+// family by the template (F0: DMA1_CH2, F2/F4/F7: DMA2_CH7, G0: DMA1_CH1,
+// F1/F3/G4: DMA1_CH4, H5/H7RS: GPDMA1_CH4, H7: DMA1_CH4/DMA1_STREAM4).
+// A few parts do not route USART1 TX to PA9 (e.g. STM32F410T8, STM32H523HE);
+// for those, change the pin and DMA channel to match the reference manual.
 bind_interrupts!(struct Irqs {
-    DMA1_CHANNEL4 => embassy_stm32::dma::InterruptHandler<embassy_stm32::peripherals::DMA1_CH4>;
+    {{ dma_irq }} => embassy_stm32::dma::InterruptHandler<embassy_stm32::peripherals::{{ dma_peri }}>;
 });
 
 // Simple in-firmware message queue shared between the tasks.
@@ -45,8 +48,8 @@ async fn main(spawner: Spawner) {
     // USART1 TX @ 115200, transmitted through DMA.
     let mut config = Config::default();
     config.baudrate = 115_200;
-    let uart =
-        UartTx::new(p.USART1, p.PA9, p.DMA1_CH4, Irqs, config).expect("UART initialization failed");
+    let dma = p.{{ dma_peri }};
+    let uart = UartTx::new(p.USART1, p.PA9, dma, Irqs, config).expect("UART initialization failed");
 
     spawner.spawn(uart_task(uart).unwrap());
 
