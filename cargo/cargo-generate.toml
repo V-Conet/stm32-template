@@ -26,6 +26,11 @@ type = "bool"
 prompt = "Use self-managed memory.x?"
 default = false
 
+[conditional.'advanced'.placeholders.caching]
+type = "bool"
+prompt = "Use sccache for caching?"
+default = false
+
 [conditional.'advanced'.placeholders.vscode_debug]
 type = "bool"
 prompt = "Enable probe-rs debugging support for VS Code?"

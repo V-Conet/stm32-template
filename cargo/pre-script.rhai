@@ -162,3 +162,9 @@ variable::set("use_memory_x", use_memory_x);
 if !use_memory_x {
     file::delete("memory.x");
 }
+
+// "caching": Whether to enable sccache caching for the build.
+let caching = variable::get("caching");
+if !advanced || caching == () || caching == "" || !caching {
+    variable::set("caching", false);
+}

@@ -1,5 +1,8 @@
 [build]
 target = "{{ rust_target }}"
+{%- if caching %}
+rustc-wrapper = "sccache"
+{%- endif %}
 
 [target.'cfg(all(target_arch = "arm", target_os = "none"))']
 runner = ["probe-rs", "run", "--chip", "{{ chip }}", "--log-format=oneline"]

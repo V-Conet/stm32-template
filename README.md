@@ -32,6 +32,7 @@ You will be asked for:
 | `advanced` | Enables the optional prompts below |
 | `ci` | Add a GitHub Actions build workflow |
 | `memory_x` | Keep a self-managed `memory.x` instead of the generated linker script |
+| `caching` | Use `sccache` to cache Rust build artifacts |
 | `vscode_debug` | Generate VS Code build/flash tasks and probe-rs debug config |
 
 Then build and flash:
